@@ -1,97 +1,72 @@
-<!doctype html>
-<html lang="hi">
+<!DOCTYPE html>
+<html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Pay ₹20 — Join Unlimited Video Group</title>
-  <style>
-    :root{
-      --mango-1: #ffb347;
-      --mango-2: #ff7f50;
-      --bg: #fff;
-      --text: #222;
-    }
-    body{
-      margin:0; font-family:system-ui, Roboto, 'Noto Sans', sans-serif;
-      background: linear-gradient(180deg,#fffaf0,#fff7f2);
-      color:var(--text);
-      display:flex; align-items:center; justify-content:center;
-      min-height:100vh; padding:20px;
-    }
-    .card{
-      width:100%; max-width:420px; background:#fff; border-radius:14px;
-      box-shadow:0 6px 20px rgba(0,0,0,0.08); padding:20px;
-    }
-    .center{text-align:center;}
-    img.qr{width:240px; max-width:70%; border-radius:8px; background:#fff; padding:8px;}
-    h1{margin:12px 0 6px; font-size:18px;}
-    p.small{margin:0 0 12px; color:#555; font-size:13px;}
-    .pay-btn{
-      display:inline-block; padding:12px 16px; border-radius:10px;
-      font-weight:600; background:linear-gradient(90deg,var(--mango-2),var(--mango-1));
-      color:#fff; text-decoration:none; box-shadow:0 6px 12px rgba(255,127,80,0.18);
-      margin:8px 0;
-    }
-    input,button{
-      font-size:15px; padding:10px; border-radius:8px;
-      border:1px solid #e6e6e6; width:100%; box-sizing:border-box;
-    }
-    button.primary{
-      background:linear-gradient(90deg,var(--mango-2),var(--mango-1));
-      color:#fff; border:0; padding:12px; border-radius:10px; font-weight:700;
-      box-shadow:0 6px 12px rgba(255,127,80,0.12);
-    }
-    button.primary:disabled{opacity:0.5;}
-    footer{text-align:center; margin-top:10px; font-size:12px; color:#666;}
-  </style>
+<meta charset="UTF-8">
+<title>Paniya Digital Success ID Generator</title>
+<style>
+  body { font-family: Arial, sans-serif; display: flex; flex-direction: column; align-items: center; margin-top: 30px; }
+  input, button { margin: 5px; padding: 8px; font-size: 16px; }
+  canvas { border: 1px solid #ccc; margin-top: 20px; }
+</style>
 </head>
 <body>
-  <div class="card">
-    <div class="center">
-      <img class="qr" src="qr.png" alt="QR Code to pay ₹20" />
-      <h1>Play Unlimited Videos</h1>
-      <p class="small">कृपया पहले ₹20 का पेमेंट करें — तभी नीचे का बटन सक्रिय होगा।</p>
-    </div>
-
-    <a href="#" class="pay-btn" onclick="openUpi()">Pay ₹20 (Open UPI App)</a>
-    <p class="small">या ऊपर QR स्कैन करें • UPI ID: <b>9509607895@ybl</b></p>
-
-    <label>Payment Screenshot (optional)</label>
-    <input type="file" id="proofFile" accept="image/*">
-
-    <label>Transaction ID (optional)</label>
-    <input type="text" id="txnId" placeholder="TXN12345...">
-
-    <button class="primary" onclick="verifyProof()">Verify & Enable</button>
-    <button class="primary" id="joinBtn" disabled onclick="joinGroup()">Play Unlimited Videos</button>
-
-    <footer>© Paniya Digital Success</footer>
-  </div>
-
+<h2>Paniya Digital Success - ID Generator</h2>
+<label>Choose Background Image: <input type="file" id="bgInput" accept="image/*"></label><br>
+<label>Name: <input type="text" id="nameInput"></label><br>
+<label>Mobile: <input type="text" id="mobileInput"></label><br>
+<label>Gender: <input type="text" id="genderInput"></label><br>
+<label>Country: <input type="text" id="countryInput"></label><br>
+<button onclick="generateID()">Generate ID</button>
+<br>
+<canvas id="idCanvas" width="600" height="900"></canvas>
 <script>
-  const upiId = "9509607895@ybl";
-  const amount = "20";
-  const groupLink = "https://chat.whatsapp.com/ID9ZXYVOY6X7e27zDFKLKa?mode=ems_copy_t";
+const canvas = document.getElementById('idCanvas');
+const ctx = canvas.getContext('2d');
+let bgImage = new Image();
 
-  function openUpi(){
-    const upiUri = `upi://pay?pa=${encodeURIComponent(upiId)}&pn=${encodeURIComponent("Paniya Digital Success")}&am=${amount}&cu=INR`;
-    window.location.href = upiUri;
-  }
+let idCounter = 1; // Auto ID counter
 
-  function verifyProof(){
-    const fileInput = document.getElementById("proofFile");
-    const txn = document.getElementById("txnId").value.trim();
-    if ((fileInput.files && fileInput.files.length > 0) || txn.length >= 6){
-      document.getElementById("joinBtn").disabled = false;
-      alert("✅ पेमेंट वेरिफिकेशन सफल! अब आप ग्रुप जॉइन कर सकते हैं।");
-    } else {
-      alert("कृपया पेमेंट का सबूत (screenshot या Txn ID) दें।");
-    }
+document.getElementById('bgInput').addEventListener('change', function(e){
+  const file = e.target.files[0];
+  if(file){
+    const reader = new FileReader();
+    reader.onload = function(evt){
+      bgImage.src = evt.target.result;
+      bgImage.onload = () => { ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height); };
+    };
+    reader.readAsDataURL(file);
   }
+});
 
-  function joinGroup(){
-    window.open(groupLink, "_blank");
-  }
+function generateID(){
+  // Clear canvas
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // Draw background
+  ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+  
+  // Auto-generate ID
+  const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,''); // YYYYMMDD
+  const autoID = 'PDS-' + dateStr + '-' + String(idCounter).padStart(3,'0');
+  idCounter++;
+
+  // Text style
+  ctx.fillStyle = '#000';
+  ctx.font = '28px Arial';
+  ctx.textAlign = 'left';
+  
+  // Draw user details
+  ctx.fillText('Name: ' + document.getElementById('nameInput').value, 50, 650);
+  ctx.fillText('Mobile: ' + document.getElementById('mobileInput').value, 50, 700);
+  ctx.fillText('Gender: ' + document.getElementById('genderInput').value, 50, 750);
+  ctx.fillText('Country: ' + document.getElementById('countryInput').value, 50, 800);
+  ctx.fillText('ID: ' + autoID, 50, 850);
+
+  // Auto download
+  const link = document.createElement('a');
+  link.download = autoID + '_' + document.getElementById('nameInput').value + '.png';
+  link.href = canvas.toDataURL();
+  link.click();
+}
 </script>
 </body>
 </html>
