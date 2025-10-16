@@ -16,15 +16,15 @@
 <label>Mobile: <input type="text" id="mobileInput"></label><br>
 <label>Gender: <input type="text" id="genderInput"></label><br>
 <label>Country: <input type="text" id="countryInput"></label><br>
-<button onclick="generateID()">Generate ID</button>
+<button id="generateBtn" disabled onclick="generateID()">Generate ID</button>
 <br>
-<canvas id="idCanvas" width="600" height="900"></canvas>
+<canvas id="idCanvas"></canvas>
 <script>
 const canvas = document.getElementById('idCanvas');
 const ctx = canvas.getContext('2d');
 let bgImage = new Image();
-
-let idCounter = 1; // Auto ID counter
+let idCounter = 1;
+const generateBtn = document.getElementById('generateBtn');
 
 document.getElementById('bgInput').addEventListener('change', function(e){
   const file = e.target.files[0];
@@ -32,34 +32,41 @@ document.getElementById('bgInput').addEventListener('change', function(e){
     const reader = new FileReader();
     reader.onload = function(evt){
       bgImage.src = evt.target.result;
-      bgImage.onload = () => { ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height); };
+      bgImage.onload = () => {
+        // Resize canvas to image size
+        canvas.width = bgImage.width;
+        canvas.height = bgImage.height;
+        ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
+        generateBtn.disabled = false; // enable button after image load
+      };
     };
     reader.readAsDataURL(file);
   }
 });
 
 function generateID(){
+  if(!bgImage.src) return;
   // Clear canvas
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  // Draw background
   ctx.drawImage(bgImage, 0, 0, canvas.width, canvas.height);
-  
+
   // Auto-generate ID
-  const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,''); // YYYYMMDD
+  const dateStr = new Date().toISOString().slice(0,10).replace(/-/g,'');
   const autoID = 'PDS-' + dateStr + '-' + String(idCounter).padStart(3,'0');
   idCounter++;
 
   // Text style
   ctx.fillStyle = '#000';
-  ctx.font = '28px Arial';
   ctx.textAlign = 'left';
-  
-  // Draw user details
-  ctx.fillText('Name: ' + document.getElementById('nameInput').value, 50, 650);
-  ctx.fillText('Mobile: ' + document.getElementById('mobileInput').value, 50, 700);
-  ctx.fillText('Gender: ' + document.getElementById('genderInput').value, 50, 750);
-  ctx.fillText('Country: ' + document.getElementById('countryInput').value, 50, 800);
-  ctx.fillText('ID: ' + autoID, 50, 850);
+  let fontSize = Math.floor(canvas.height * 0.03); // 3% of height
+  ctx.font = fontSize + 'px Arial';
+
+  // Draw user details (relative positions)
+  ctx.fillText('Name: ' + document.getElementById('nameInput').value, canvas.width*0.08, canvas.height*0.72);
+  ctx.fillText('Mobile: ' + document.getElementById('mobileInput').value, canvas.width*0.08, canvas.height*0.77);
+  ctx.fillText('Gender: ' + document.getElementById('genderInput').value, canvas.width*0.08, canvas.height*0.82);
+  ctx.fillText('Country: ' + document.getElementById('countryInput').value, canvas.width*0.08, canvas.height*0.87);
+  ctx.fillText('ID: ' + autoID, canvas.width*0.08, canvas.height*0.92);
 
   // Auto download
   const link = document.createElement('a');
